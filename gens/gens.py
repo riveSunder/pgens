@@ -207,14 +207,14 @@ def main():
     # make env
     #env_name = "BipedalWalker-v2" 
     env_name = "InvertedPendulumSwingupBulletEnv-v0"
-    env_name = "HalfCheetahBulletEnv-v0"
+    #env_name = "HalfCheetahBulletEnv-v0"
     env = gym.make(env_name)
 
     input_dim = env.observation_space.sample().shape[0]
     output_dim = env.action_space.sample().shape[0]
 
     train_generators(env, 1000, input_dim, output_dim, hid_dim=16,
-            fit_threshold=950.0)
+            fit_threshold=850.0)
 
 if __name__ == "__main__":
     main()
