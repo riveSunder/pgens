@@ -10,6 +10,10 @@ def relu(x):
     x[x<0.0] = 0.0
     return x
 
+def sigmoid(x):
+    x = 1 / (1 + np.exp(-x)
+    return x
+
 class MLP():
     def __init__(self, weights, input_dim, hid_dim, output_dim):
 
@@ -23,7 +27,7 @@ class MLP():
         if len(obs.shape) is 1:
             obs = obs.reshape(1,obs.shape[0])
 
-        h = relu(np.matmul(obs, self.x2h))
+        h = np.tanh(np.matmul(obs, self.x2h))
         y = np.matmul(h,self.h2y)
 
         return y
@@ -52,6 +56,7 @@ def get_fitness(env, population, epds=4):
             while not done:
                 act = population[indy].forward(obs)
 
+                act = np.tanh(act)
                 if act.shape[1] > 1:
                     act = act.squeeze()
                 obs, reward, done, info = env.step(act)
@@ -73,7 +78,7 @@ def get_gen_fitness(env, generators, epds=8, \
 
     pop_fitness = []
     num_weights = input_dim*hid_dim + hid_dim*output_dim
-    epd_epds = 3
+    epd_epds = 4
     for ii in range (len_generators):
         gen_fitness = None
         for epd in range(epds): 
@@ -82,7 +87,7 @@ def get_gen_fitness(env, generators, epds=8, \
             latent_space = np.random.randn(1, dim_latent)
             agent_params = generators[ii].forward(latent_space)
             for epd_epd in range(epd_epds):
-                agent_mean = agent_params[:1,0:num_weights]
+                agent_mean = np.tanh(agent_params[:1,0:num_weights])
                 agent_var = np.abs(agent_params[:1,num_weights:])
 
                 agent_weights = np.random.normal(agent_mean, agent_var)
@@ -148,7 +153,7 @@ def update_gen_dist(generators, fitness, mean=None, \
 
 
 def train_generators(env, max_generations, \
-        input_dim, output_dim, hid_dim, fit_threshold=float("Inf")):
+        input_dim, output_dim, hid_dim, tag="default", fit_threshold=float("Inf")):
 
     latent_dim, gen_hid = 2, 16
     gen_out = 2*(input_dim*hid_dim + output_dim*hid_dim) 
@@ -156,7 +161,7 @@ def train_generators(env, max_generations, \
     gen_mean = np.zeros((latent_dim*gen_hid + gen_hid*gen_out))
     gen_var = np.ones((latent_dim*gen_hid + gen_hid*gen_out))
     num_generators = 64
-    epds = 3 
+    epds = 4 
 
     smooth_fit = 0.0
     
@@ -192,29 +197,45 @@ def train_generators(env, max_generations, \
         if smooth_fit > fit_threshold:
             print("task solved, ending evolution")
             break
+        if generation % 50 == 0:
+            with open("results/{}_fitness.pickle".format(tag), "wb") as f:
+                pickle.dump(fitnesses, f)
+            with open("results/dists.pickle".format(tag), "wb") as f:
+                pickle.dump(means_and_vars, f)
+            with open("results/generators.pickle".format(tag), "wb") as f:
+                pickle.dump(best_generators, f)
 
     import pdb; pdb.set_trace()
 
-    with open("results/fitness.pickle", "wb") as f:
+    with open("results/{}_fitness.pickle".format(tag), "wb") as f:
         pickle.dump(fitnesses, f)
-    with open("results/dists.pickle", "wb") as f:
+    with open("results/dists.pickle".format(tag), "wb") as f:
         pickle.dump(means_and_vars, f)
-    with open("results/generators.pickle", "wb") as f:
+    with open("results/generators.pickle".format(tag), "wb") as f:
         pickle.dump(best_generators, f)
 
 def main():
 
     # make env
-    #env_name = "BipedalWalker-v2" 
-    env_name = "InvertedPendulumSwingupBulletEnv-v0"
+    env_name = "InvertedPendulumBulletEnv-v0"
+    #env_name = "InvertedPendulumSwingupBulletEnv-v0"
+    #env_name = "InvertedDoublePendulumBulletEnv-v0"
     #env_name = "HalfCheetahBulletEnv-v0"
+    #env_name = "BipedalWalker-v2"
     env = gym.make(env_name)
+    print("making {} env".format(env_name))
 
     input_dim = env.observation_space.sample().shape[0]
     output_dim = env.action_space.sample().shape[0]
 
-    train_generators(env, 1000, input_dim, output_dim, hid_dim=16,
-            fit_threshold=850.0)
+    if "Swingup" in env_name:
+        tag = "Swingup"+ str(int(time.time()))[-5:]
+    elif "Double" in env_name:
+        tag = "Double"+ str(int(time.time()))[-5:]
+    else:
+        tag = "InvPend" + str(int(time.time()))[-5:]
+
+    train_generators(env, 20000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=999.)
 
 if __name__ == "__main__":
     main()
