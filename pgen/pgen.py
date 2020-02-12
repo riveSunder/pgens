@@ -11,7 +11,7 @@ def relu(x):
     return x
 
 def sigmoid(x):
-    x = 1 / (1 + np.exp(-x)
+    x = 1 / (1 + np.exp(-x))
     return x
 
 class MLP():
@@ -117,7 +117,7 @@ def get_generators(gen_mean, gen_var, num_generators=32, latent_dim=2, \
     return generators
 
 def update_gen_dist(generators, fitness, mean=None, \
-        var=None, lr=0.25):
+        var=None, lr=0.75):
 
 
     sort_indices = list(np.argsort(fitness))
@@ -147,7 +147,7 @@ def update_gen_dist(generators, fitness, mean=None, \
     else:
         new_mean = elite_mean
 
-    new_var =  np.ones((num_weights))
+    new_var =  5e-1*np.ones((num_weights))
 
     return new_mean, new_var, generators[sort_indices[jj]]
 
@@ -160,7 +160,7 @@ def train_generators(env, max_generations, \
 
     gen_mean = np.zeros((latent_dim*gen_hid + gen_hid*gen_out))
     gen_var = np.ones((latent_dim*gen_hid + gen_hid*gen_out))
-    num_generators = 64
+    num_generators = 128
     epds = 4 
 
     smooth_fit = 0.0
@@ -200,26 +200,26 @@ def train_generators(env, max_generations, \
         if generation % 50 == 0:
             with open("results/{}_fitness.pickle".format(tag), "wb") as f:
                 pickle.dump(fitnesses, f)
-            with open("results/dists.pickle".format(tag), "wb") as f:
+            with open("results/{}_dists.pickle".format(tag), "wb") as f:
                 pickle.dump(means_and_vars, f)
-            with open("results/generators.pickle".format(tag), "wb") as f:
+            with open("results/{}_generators.pickle".format(tag), "wb") as f:
                 pickle.dump(best_generators, f)
 
     import pdb; pdb.set_trace()
 
     with open("results/{}_fitness.pickle".format(tag), "wb") as f:
         pickle.dump(fitnesses, f)
-    with open("results/dists.pickle".format(tag), "wb") as f:
+    with open("results/{}_dists.pickle".format(tag), "wb") as f:
         pickle.dump(means_and_vars, f)
-    with open("results/generators.pickle".format(tag), "wb") as f:
+    with open("results/{}_generators.pickle".format(tag), "wb") as f:
         pickle.dump(best_generators, f)
 
 def main():
 
     # make env
     env_name = "InvertedPendulumBulletEnv-v0"
-    #env_name = "InvertedPendulumSwingupBulletEnv-v0"
-    #env_name = "InvertedDoublePendulumBulletEnv-v0"
+    env_name = "InvertedPendulumSwingupBulletEnv-v0"
+    env_name = "InvertedDoublePendulumBulletEnv-v0"
     #env_name = "HalfCheetahBulletEnv-v0"
     #env_name = "BipedalWalker-v2"
     env = gym.make(env_name)
@@ -235,7 +235,7 @@ def main():
     else:
         tag = "InvPend" + str(int(time.time()))[-5:]
 
-    train_generators(env, 20000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=999.)
+    train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=3850.)
 
 if __name__ == "__main__":
     main()

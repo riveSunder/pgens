@@ -68,7 +68,9 @@ def gen_animation(env_name, generator_file, latent_steps=10):
     fitness_landscape_plot = np.array(fitness_landscape).reshape(latent_steps, latent_steps)
     plt.figure(figsize=(10,10))
     plt.imshow(fitness_landscape_plot)
+    plt.colorbar()
     plt.show()
+    import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
     
