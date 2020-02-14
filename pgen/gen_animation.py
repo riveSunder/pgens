@@ -69,8 +69,7 @@ def gen_animation(env_name, generator_file, latent_steps=10):
     plt.figure(figsize=(10,10))
     plt.imshow(fitness_landscape_plot)
     plt.colorbar()
-    plt.show()
-    import pdb; pdb.set_trace()
+    import mpld3; mpld3.show()
 
 if __name__ == "__main__":
     
@@ -84,4 +83,4 @@ if __name__ == "__main__":
 
     generator_file = args.generator_file
 
-    gen_animation(env_name, generator_file, latent_steps=32)
+    gen_animation(env_name, generator_file, latent_steps=2)

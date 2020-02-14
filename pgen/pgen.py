@@ -147,7 +147,7 @@ def update_gen_dist(generators, fitness, mean=None, \
     else:
         new_mean = elite_mean
 
-    new_var =  5e-1*np.ones((num_weights))
+    new_var =  1e-1*np.ones((num_weights))
 
     return new_mean, new_var, generators[sort_indices[jj]]
 
@@ -219,7 +219,7 @@ def main():
     # make env
     env_name = "InvertedPendulumBulletEnv-v0"
     env_name = "InvertedPendulumSwingupBulletEnv-v0"
-    env_name = "InvertedDoublePendulumBulletEnv-v0"
+    #env_name = "InvertedDoublePendulumBulletEnv-v0"
     #env_name = "HalfCheetahBulletEnv-v0"
     #env_name = "BipedalWalker-v2"
     env = gym.make(env_name)
@@ -235,7 +235,7 @@ def main():
     else:
         tag = "InvPend" + str(int(time.time()))[-5:]
 
-    train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=3850.)
+    train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=850.)
 
 if __name__ == "__main__":
     main()
