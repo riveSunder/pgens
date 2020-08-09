@@ -70,7 +70,7 @@ def get_fitness(env, population, epds=4):
     return fitness, total_steps
 
 
-def get_gen_fitness(env, generators, epds=8, \
+def get_gen_fitness(env, generators, epds=3, \
         input_dim=5, hid_dim=8, output_dim=1, dim_latent=2):
 
     len_generators = len(generators)
@@ -78,7 +78,7 @@ def get_gen_fitness(env, generators, epds=8, \
 
     pop_fitness = []
     num_weights = input_dim*hid_dim + hid_dim*output_dim
-    epd_epds = 4
+    epd_epds = 3
     for ii in range (len_generators):
         gen_fitness = None
         for epd in range(epds): 
@@ -94,7 +94,7 @@ def get_gen_fitness(env, generators, epds=8, \
                 
                 agent = [MLP(agent_weights, input_dim, hid_dim, output_dim)]
                 
-                fitness, total_steps = get_fitness(env, agent, epds=1)
+                fitness, total_steps = get_fitness(env, agent, epds=2)
 
                 total_total_steps += total_steps
                 
@@ -161,7 +161,7 @@ def train_generators(env, max_generations, \
     gen_mean = np.zeros((latent_dim*gen_hid + gen_hid*gen_out))
     gen_var = np.ones((latent_dim*gen_hid + gen_hid*gen_out))
     num_generators = 128
-    epds = 4 
+    epds = 3 
 
     smooth_fit = 0.0
     
@@ -205,7 +205,6 @@ def train_generators(env, max_generations, \
             with open("results/{}_generators.pickle".format(tag), "wb") as f:
                 pickle.dump(best_generators, f)
 
-    import pdb; pdb.set_trace()
 
     with open("results/{}_fitness.pickle".format(tag), "wb") as f:
         pickle.dump(fitnesses, f)
@@ -218,24 +217,32 @@ def main():
 
     # make env
     env_name = "InvertedPendulumBulletEnv-v0"
-    env_name = "InvertedPendulumSwingupBulletEnv-v0"
+    #env_name = "InvertedPendulumSwingupBulletEnv-v0"
     #env_name = "InvertedDoublePendulumBulletEnv-v0"
     #env_name = "HalfCheetahBulletEnv-v0"
-    #env_name = "BipedalWalker-v2"
+    #env_name = "BipedalWalker-v3"
     env = gym.make(env_name)
     print("making {} env".format(env_name))
 
     input_dim = env.observation_space.sample().shape[0]
     output_dim = env.action_space.sample().shape[0]
 
-    if "Swingup" in env_name:
-        tag = "Swingup"+ str(int(time.time()))[-5:]
-    elif "Double" in env_name:
-        tag = "Double"+ str(int(time.time()))[-5:]
-    else:
-        tag = "InvPend" + str(int(time.time()))[-5:]
+    for env_name in [ "InvertedPendulumBulletEnv-v0",\
+            "InvertedDoublePendulumBulletEnv-v0",\
+            "InvertedPendulumSwingupBulletEnv-v0"\
+            ]:
+        if "Swingup" in env_name:
+            tag = "Swingup"+ str(int(time.time()))[-5:]
+        elif "Double" in env_name:
+            tag = "Double"+ str(int(time.time()))[-5:]
+        elif "Cheetah" in env_name:
+            tag = "Cheetah" + str(int(time.time()))[-5:]
+        elif "Bipedal" in env_name:
+            tag = "Bipedal" + str(int(time.time()))[-5:]
+        else:
+            tag = "InvPend" + str(int(time.time()))[-5:]
 
-    train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=850.)
+        train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=850.)
 
 if __name__ == "__main__":
     main()
