@@ -1,8 +1,8 @@
 import numpy as np
 import gym
+import time
 import pybullet
 import pybullet_envs
-import time
 
 import pickle
 
@@ -84,7 +84,7 @@ def get_gen_fitness(env, generators, epds=3, \
         for epd in range(epds): 
             # generate a set of policy weights from a latent vector,
             # using the generator
-            latent_space = np.random.randn(1, dim_latent)
+            latent_space = np.random.randn(1, dim_latent) / 3.
             agent_params = generators[ii].forward(latent_space)
             for epd_epd in range(epd_epds):
                 agent_mean = np.tanh(agent_params[:1,0:num_weights])
@@ -165,7 +165,6 @@ def train_generators(env, max_generations, \
 
     smooth_fit = 0.0
     
-
     fitnesses = []
     means_and_vars = []
     best_generators = []
@@ -213,36 +212,41 @@ def train_generators(env, max_generations, \
     with open("results/{}_generators.pickle".format(tag), "wb") as f:
         pickle.dump(best_generators, f)
 
-def main():
+def train():
 
     # make env
-    env_name = "InvertedPendulumBulletEnv-v0"
-    #env_name = "InvertedPendulumSwingupBulletEnv-v0"
+    #env_name = "InvertedPendulumBulletEnv-v0"
+    env_name = "InvertedPendulumSwingupBulletEnv-v0"
     #env_name = "InvertedDoublePendulumBulletEnv-v0"
     #env_name = "HalfCheetahBulletEnv-v0"
     #env_name = "BipedalWalker-v3"
+    #env_name = "Pendulum-v0"
     env = gym.make(env_name)
     print("making {} env".format(env_name))
 
     input_dim = env.observation_space.sample().shape[0]
     output_dim = env.action_space.sample().shape[0]
+    hid_dim = 16
 
-    for env_name in [ "InvertedPendulumBulletEnv-v0",\
-            "InvertedDoublePendulumBulletEnv-v0",\
-            "InvertedPendulumSwingupBulletEnv-v0"\
-            ]:
-        if "Swingup" in env_name:
-            tag = "Swingup"+ str(int(time.time()))[-5:]
-        elif "Double" in env_name:
-            tag = "Double"+ str(int(time.time()))[-5:]
-        elif "Cheetah" in env_name:
-            tag = "Cheetah" + str(int(time.time()))[-5:]
-        elif "Bipedal" in env_name:
-            tag = "Bipedal" + str(int(time.time()))[-5:]
-        else:
-            tag = "InvPend" + str(int(time.time()))[-5:]
+#
+#    for env_name in [ "InvertedPendulumBulletEnv-v0",\
+#            "InvertedDoublePendulumBulletEnv-v0",\
+#            "InvertedPendulumSwingupBulletEnv-v0"\
+#            ]:
+#        print("env name: ", env_name)
+#        if "Swingup" in env_name:
+#            tag = "Swingup"+ str(int(time.time()))[-5:]
+#        elif "Double" in env_name:
+#            tag = "Double"+ str(int(time.time()))[-5:]
+#        elif "Cheetah" in env_name:
+#            tag = "Cheetah" + str(int(time.time()))[-5:]
+#        elif "Bipedal" in env_name:
+#            tag = "Bipedal" + str(int(time.time()))[-5:]
+#        else:
+#            tag = "InvPend" + str(int(time.time()))[-5:]
 
-        train_generators(env, 3000, input_dim, output_dim, hid_dim=16, tag=tag, fit_threshold=850.)
+    tag = "Bipedal"
+    train_generators(env, 2000, input_dim, hid_dim, output_dim, tag=tag, fit_threshold=350.)
 
 if __name__ == "__main__":
-    main()
+    train()
