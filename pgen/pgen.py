@@ -61,9 +61,10 @@ def get_fitness(env, population, epds=4):
                 act = population[indy].get_action(obs)
 
                 if len(act.shape) > 1:
-                    act = act.squeeze()
+                    act = act[0]
 
-                if act.shape[0] == 1:
+                if act.shape[0] == 1 and population[indy].discrete:
+                    # fix for CartPole
                     act = act[0]
 
                 obs, reward, done, info = env.step(act)
@@ -254,7 +255,7 @@ def train():
         tag = env_name[0:8] + str(int(time.time()))[-5:]
 
         train_generators(env, generations, input_dim, hid_dim, output_dim, \
-                tag=tag, fit_threshold=350., discrete=discrete)
+                tag=tag, fit_threshold=1500., discrete=discrete)
 
 if __name__ == "__main__":
     train()
