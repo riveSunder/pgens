@@ -3,13 +3,15 @@ import pickle
 import gym
 
 from pgen import MLP
+import pybullet
+import pybullet_envs
 
 import numpy as np
 import skimage
 import skimage.io
 import matplotlib.pyplot as plt
 
-def gen_animation(env_name, generator_file, latent_steps=10):
+def gen_animation(env_name, generator_file, latent_steps=10, save_figs=False):
 
     env = gym.make(env_name)
 
@@ -55,7 +57,9 @@ def gen_animation(env_name, generator_file, latent_steps=10):
                     obs, reward, done, info = env.step(act)
                     epd_reward += reward
                     
-                    if epd == 0:
+                    if epd == 0 and save_figs:
+                        env.unwrapped._render_width = 640
+                        env.unwrapped._render_height = 480
                         img = env.render(mode="rgb_array")
                         skimage.io.imsave("./results/figs/{}_step{}_latent{}.png".format(\
                                         env_name, str(step).zfill(3), \
@@ -69,13 +73,15 @@ def gen_animation(env_name, generator_file, latent_steps=10):
     plt.figure(figsize=(10,10))
     plt.imshow(fitness_landscape_plot)
     plt.colorbar()
-    import mpld3; mpld3.show()
+    plt.show()
 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--env_name", type=str, default="InvertedPendulumBulletEnv-v0")
     parser.add_argument("-g", "--generator_file", type=str, default="results/InvPend_generators.pickle")
+    parser.add_argument("-l", "--latent_steps", type=int, default=3)
+    parser.add_argument("-s", "--save_figs", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -83,4 +89,4 @@ if __name__ == "__main__":
 
     generator_file = args.generator_file
 
-    gen_animation(env_name, generator_file, latent_steps=2)
+    gen_animation(env_name, generator_file, latent_steps=args.latent_steps, save_figs=args.save_figs)
