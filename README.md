@@ -10,7 +10,7 @@ PGENs are a way to evolve a meta-policy that in turn specifies a continuous dist
 </div>
 <br>
 
-After training, the fitness landscape over the latent space can then be mapped.
+After training, the fitness landscape over the latent space can be mapped.
 
 <div align="center">
 <img src="assets/swingup_fitness_landscape.png" width=70%>
@@ -27,7 +27,7 @@ In exchange for a few more parameters and longer training time, a meta-policy ca
 <div align="center">
 <img src="assets/swingup_fitness_policies.gif" width=70%>
 <br>
-<em>A collection of agent policies specificed by a single meta-policy.</em><br>
+<em>A collection of agent policies specificed by a single meta-policy.</em><br>PGEN
 </div>
 <br>
 
@@ -43,7 +43,7 @@ virtualenv pgen_env --python=python3
 source pgen_env/bin/activate
 
 git clone https://github.com/rivesunder/pgens.git
-cd PGEN
+cd pgens
 pip install -e . 
 ```
 
