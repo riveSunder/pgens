@@ -13,7 +13,7 @@ PGENs are a way to evolve a meta-policy that in turn specifies a continuous dist
 After training, the fitness landscape over the latent space can be mapped.
 
 <div align="center">
-<img src="assets/swingup_fitness_landscape.png" width=70%>
+<img src="assets/swingup_fitness_landscape_1.png" width=70%>
 <br>
 <em>Fitness landscape over latent space for `InvertedPendulumSwingupBulletEnv-v0`</em><br>
 </div>
@@ -25,7 +25,7 @@ In the first iteration of PGENs I used an MLP to transform a latent space into a
 In exchange for a few more parameters and longer training time, a meta-policy can evolve to produce a continuous distribution of agent policies, the majority of which are effective at the task at hand. This yields a significant diversity of qualitatively distinct agent policies, which, for complex environments, may provide a competent repertoire to deal with different scenarios. 
 
 <div align="center">
-<img src="assets/swingup_fitness_policies.gif" width=70%>
+<img src="assets/swingup_fitness_policies_1.gif" width=70%>
 <br>
 <em>A collection of agent policies specificed by a single meta-policy.</em><br>PGEN
 </div>
