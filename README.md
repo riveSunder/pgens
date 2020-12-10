@@ -1,28 +1,38 @@
 # Policy Generating Evolved Networks
 
-<div align="center">
-_PGENs_
-</div>
 
 PGENs are a way to evolve a meta-policy that in turn specifies a continuous distribution of policy parameters for an agent. PGENs are similar to and can be compared with generative adversarial networks, except that the generators are producing agent policy parameters instead of direct outputs, and while PGANs could use generator-discriminator pair to train, PGENs are selected purely based on the fitness of agent policies produced. 
 
-After training, the fitness landscape over the latent space can then be mapped.
+<div align="center">
+<img src="assets/pgen_diagram.png" width=70%>
+<br>
+<em>PGEN training overview</em><br>
+</div>
+<br>
+
+After training, the fitness landscape over the latent space can be mapped.
 
 <div align="center">
 <img src="assets/swingup_fitness_landscape.png" width=70%>
-_Fitness landscape over latent space for `InvertedPendulumSwingupBulletEnv-v0`_
+<br>
+<em>Fitness landscape over latent space for `InvertedPendulumSwingupBulletEnv-v0`</em><br>
 </div>
+<br>
+
 
 In the first iteration of PGENs I used an MLP to transform a latent space into an array of parameters that are then used by a second MLP to act as the agent policy in an RL environment. This might seem a bit misguided at first glance as the meta-policy has _more_ parameters than the agent policy, so there are no compression benefits, and training costs more wall time as well. PGEN Training can be expected to take more than 10X as long as evolution of the agent policy directly. 
 
 In exchange for a few more parameters and longer training time, a meta-policy can evolve to produce a continuous distribution of agent policies, the majority of which are effective at the task at hand. This yields a significant diversity of qualitatively distinct agent policies, which, for complex environments, may provide a competent repertoire to deal with different scenarios. 
 
 <div align="center">
-<img src="assets/swingup_fitness_landscape.gif" width=70%>
-_A collection of agent policies specificed by a single meta-policy._
+<img src="assets/swingup_fitness_policies.gif" width=70%>
+<br>
+<em>A collection of agent policies specificed by a single meta-policy.</em><br>PGEN
 </div>
+<br>
 
-We could also design our PGEN architecture to yield compression benefits as well, for example by encoding the PGEN for a multilayer perceptron agent policy as a convolutional neural network or (and I hope to show some results on this soon) as a set of cellular automata rules. 
+
+We can also design our PGEN architecture to yield compression benefits as well, for example by encoding the PGEN for a multilayer perceptron agent policy as a convolutional neural network or (and I hope to show some results on this soon) as a set of cellular automata rules. 
 
 ## Getting Started
 
@@ -32,8 +42,8 @@ Here is an example of how you might go about initializing a virtual environment 
 virtualenv pgen_env --python=python3
 source pgen_env/bin/activate
 
-git clone https://github.com/rivesunder/PGEN.git
-cd PGEN
+git clone https://github.com/rivesunder/pgens.git
+cd pgens
 pip install -e . 
 ```
 
