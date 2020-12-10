@@ -75,7 +75,7 @@ def gen_animation(env_name, generator_file, latent_steps=10, save_figs=False,\
                                 + str(int(10*latent_walk1))),\
                                 np.uint8(img))
                     step += 1
-            fitness_landscape.append(epd_reward/epds)
+            fitness_landscape.append(epd_reward)
             print("reward : {}".format(epd_reward), " latent space ", latent_space)
 
     fitness_landscape_plot = np.array(fitness_landscape).reshape(latent_steps, latent_steps)
